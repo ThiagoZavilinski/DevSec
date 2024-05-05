@@ -22,25 +22,33 @@ jobs:
           docker push ${{ secrets.USER }}/devsecops:2.0
 
   sast_test:
-    runs-on: ubuntu-latest
-    needs: [build]
+   runs-on: ubuntu-latest
+   needs: [build]
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+   steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Install HTMLHint
-        run: npm install -g htmlhint
+    - name: Install HTMLHint
+      run: npm install -g htmlhint
 
-      - name: Run HTMLHint security scan
-        run: htmlhint web.html --format json > htmlhint-output.json || true  # Ignore failures to prevent pipeline from failing
+    - name: Run HTMLHint security scan
+      run: htmlhint web.html --format json > htmlhint-output.json || true  # Ignorar falhas para evitar que a pipeline falhe
 
-      - name: Archive HTMLHint output
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: htmlhint_output
-          path: htmlhint-output.json
+    - name: Check for vulnerabilities
+      run: |
+        if grep -q 'error' htmlhint-output.json; then
+          echo "Vulnerabilidade encontrada"
+        else
+          echo "Nenhuma vulnerabilidade encontrada"
+        fi
+
+    - name: Archive HTMLHint output
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: htmlhint_output
+        path: htmlhint-output.json
 
   deploy:
     runs-on: ubuntu-latest
