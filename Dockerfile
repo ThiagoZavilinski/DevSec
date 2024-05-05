@@ -1,9 +1,3 @@
-FROM python:3
+FROM nginx
 
-COPY . /app
-WORKDIR /app
-
-RUN pip install --upgrade pip
-RUN pip install pywebview
-
-CMD ["python3", "hello.py"]
+COPY web.html /usr/share/nginx/html
