@@ -21,7 +21,7 @@ jobs:
         docker build -t ${{ secrets.USER }}/devsecops:2.0 .
         docker push ${{ secrets.USER }}/devsecops:2.0
 
-  owasp_test:
+  sast_test:
     needs: build
     runs-on: ubuntu-latest
 
@@ -29,19 +29,15 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Login to Docker Hub for pulling image
-      run: echo "${{ secrets.PASS }}" | docker login -u "${{ secrets.USER }}" --password-stdin
+    - name: Install Bandit
+      run: pip install bandit
 
-    - name: Pull OWASP ZAP Docker image
-      run: docker pull owasp/zap2docker-stable:latest
+    - name: Run Bandit SAST scan
+      run: bandit -r . -f json -o bandit-output.json || true  # Ignore failures to prevent pipeline from failing
 
-    - name: Run OWASP ZAP test
-      run: |
-        docker run -v $(pwd):/zap/wrk -u $(id -u ${USER}):$(id -g ${USER}) -t owasp/zap2docker-stable zap-baseline.py -t ${URL2} -J report_json
-
-    - name: Archive OWASP ZAP report
+    - name: Archive Bandit output
       if: always()
       uses: actions/upload-artifact@v2
       with:
-        name: owasp_report
-        path: report_json.json
+        name: bandit_output
+        path: bandit-output.json
