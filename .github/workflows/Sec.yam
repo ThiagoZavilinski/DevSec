@@ -1,0 +1,22 @@
+image: python:latest
+
+stages:
+ - Build
+
+services:
+  - docker:dind 
+
+ 
+  
+
+build:
+   image: docker:latest
+   stage: Build
+
+   variables:
+    IMAGE: ${CI_REGISTRY_USER}/simpleapp:latest
+
+   script:
+      - "docker build -t ${USER}/devsecops:2.0 ."
+      - "docker login -u ${USER} -p ${PASS}"
+      - "docker push ${USER}/devsecops:2.0"
