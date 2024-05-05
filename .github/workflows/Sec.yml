@@ -1,4 +1,4 @@
-name: Sec
+name: test
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
         run: npm install -g htmlhint
 
       - name: Run HTMLHint security scan
-        run: htmlhint --format json > htmlhint-output.json || true  # Ignore failures to prevent pipeline from failing
+        run: htmlhint web.html --format json > htmlhint-output.json || true  # Ignore failures to prevent pipeline from failing
 
       - name: Archive HTMLHint output
         if: always()
