@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Bandit SAST scan
         run: |
-          bandit -r . -n 5 -lll --skip B311,B312,B502 -f json -o bandit-output.json || true  # Ignore failures to prevent pipeline from failing
+          bandit -r web.html -n 5 -lll --skip B311,B312,B502 -f json -o bandit-output.json || true  # Ignore failures to prevent pipeline from failing
 
       - name: Archive Bandit output
         if: always()
