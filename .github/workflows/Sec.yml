@@ -29,19 +29,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install Bandit
-        run: pip install bandit
+      - name: Install HTMLHint
+        run: npm install -g htmlhint
 
-      - name: Run Bandit SAST scan
-        run: |
-          bandit -r web.html -n 5 -lll --skip B311,B312,B502 -f json -o bandit-output.json || true  # Ignore failures to prevent pipeline from failing
+      - name: Run HTMLHint security scan
+        run: htmlhint --format json > htmlhint-output.json || true  # Ignore failures to prevent pipeline from failing
 
-      - name: Archive Bandit output
+      - name: Archive HTMLHint output
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: bandit_output
-          path: bandit-output.json
+          name: htmlhint_output
+          path: htmlhint-output.json
 
   deploy:
     runs-on: ubuntu-latest
