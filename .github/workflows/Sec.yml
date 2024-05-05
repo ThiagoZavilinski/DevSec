@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Sec
 
 on:
   push:
@@ -20,3 +20,23 @@ jobs:
       run: |
         docker build -t ${{ secrets.USER }}/devsecops:2.0 .
         docker push ${{ secrets.USER }}/devsecops:2.0
+
+  owasp_test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Run OWASP ZAP test
+      run: |
+        docker run -v $(pwd):/zap/wrk -u $(id -u ${USER}):$(id -g ${USER}) -t owasp/zap2docker-stable zap-baseline.py -t ${URL2} -J report_json
+
+    - name: Archive OWASP ZAP report
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: owasp_report
+        path: report_json.json
+    
