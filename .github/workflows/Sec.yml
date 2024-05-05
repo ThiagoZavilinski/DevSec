@@ -1,4 +1,4 @@
-name: Sec test
+name: Sec
 
 on:
   push:
@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Bandit SAST scan
         run: |
-          bandit -r . -f json -o bandit-output.json || true  # Ignore failures to prevent pipeline from failing
+          bandit -r . --profile security -f json -o bandit-output.json || true  # Ignore failures to prevent pipeline from failing
 
       - name: Archive Bandit output
         if: always()
