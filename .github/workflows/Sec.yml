@@ -1,4 +1,4 @@
-name: Pipeline Secure test
+name: Sec test
 
 on:
   push:
