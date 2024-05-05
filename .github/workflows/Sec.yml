@@ -29,6 +29,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Login to Docker Hub for pulling image
+      run: echo "${{ secrets.PASS }}" | docker login -u "${{ secrets.USER }}" --password-stdin
+
+    - name: Pull OWASP ZAP Docker image
+      run: docker pull owasp/zap2docker-stable:latest
+
     - name: Run OWASP ZAP test
       run: |
         docker run -v $(pwd):/zap/wrk -u $(id -u ${USER}):$(id -g ${USER}) -t owasp/zap2docker-stable zap-baseline.py -t ${URL2} -J report_json
@@ -39,4 +45,3 @@ jobs:
       with:
         name: owasp_report
         path: report_json.json
-    
